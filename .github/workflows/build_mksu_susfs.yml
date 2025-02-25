@@ -92,21 +92,36 @@ jobs:
         if: github.event.inputs.SUSFS_ENABLED == 'true'
         run: |
            cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/
+           echo "1"
            git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
+           echo "2"
            git clone https://github.com/WildPlusKernel/kernel_patches.git
+           echo "3"
            cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform
-           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ~/kernel_workspace/kernel_platform/KernelSU
+           echo "4"
+           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
+           echo "5"
            cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
+           echo "6"
            cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
+           echo "7"
            cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-           cp ../kernel_patches/mksu_susfs.patch ~/kernel_workspace/kernel_platform/KernelSU
+           echo "8"
+           cp ../kernel_patches/mksu_susfs.patch /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
+           echo "9"
            # Apply patches
+           echo "10"
            cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
+           echo "11"
            patch -p1 -f < 10_enable_susfs_for_ksu.patch || true
+           echo "12"
            # 使用针对mksu的补丁
            patch -p1 -f < mksu_susfs.patch || true
+           echo "13"
            cd ../common
+           echo "14"
            patch -p1 -f < 50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch || true
+           echo "15"
            
       - name: Build kernel
         run: |

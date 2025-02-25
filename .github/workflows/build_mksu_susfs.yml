@@ -111,7 +111,7 @@ jobs:
            echo "9"
            # Apply patches
            echo "10"
-           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
+           #cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
            echo "11"
            patch -p1 -f < 10_enable_susfs_for_ksu.patch || true
            echo "12"

@@ -5,15 +5,15 @@ on:
       CPU:
         description: "分支"
         required: true
-        default: 'sm7675'
+        default: 'sm8550'
       FEIL:
         description: "配置文件"
         required: true
-        default: 'oneplus_ace_3v_v'
+        default: 'oneplus_ace3_v'
       CPUD:
         description: "处理器代号"
         required: true
-        default: 'pineapple'
+        default: 'kalama'
       ANDROID_VERSION:
         description: "内核安卓版本"
         required: true
@@ -21,7 +21,7 @@ on:
       KERNEL_VERSION:
         description: "内核版本"
         required: true
-        default: '6.1'
+        default: '5.15'
       MKSU_ENABLED:
         description: "添加 MKSU"
         required: true
@@ -57,6 +57,7 @@ jobs:
          git config --global user.email "3436378798@qq.com"
       - name: Install dependencies
         run: |
+	 cd ~
          sudo apt update && sudo apt upgrade -y
          sudo apt install -y python3 git curl
       - name: Install repo tool
@@ -66,6 +67,7 @@ jobs:
          sudo mv ~/repo /usr/local/bin/repo
       - name: Initialize repo and sync
         run: |
+	 cd ~
          mkdir kernel_workspace && cd kernel_workspace
          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FEIL }}.xml --depth=1
          repo sync
@@ -80,7 +82,7 @@ jobs:
       - name: Set up MKSU
         if: github.event.inputs.MKSU_ENABLED == 'true'
         run: |
-         cd kernel_workspace/kernel_platform
+         cd ~/kernel_workspace/kernel_platform
          curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/refs/heads/main/kernel/setup.sh" | bash -
          cd KernelSU
          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
@@ -90,17 +92,17 @@ jobs:
       - name: Set up susfs
         if: github.event.inputs.SUSFS_ENABLED == 'true'
         run: |
-           cd kernel_workspace
+           cd ~/kernel_workspace
            git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
            git clone https://github.com/WildPlusKernel/kernel_patches.git
-           cd kernel_platform
-           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
+           cd ~/kernel_workspace/kernel_platform
+           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ~/kernel_workspace/kernel_platform/KernelSU
            cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
            cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
            cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
-           cp ../kernel_patches/mksu_susfs.patch ./KernelSU/
+           cp ../kernel_patches/mksu_susfs.patch ~/kernel_workspace/kernel_platform/KernelSU
            # Apply patches
-           cd ./KernelSU
+           cd ~/kernel_workspace/kernel_platform/KernelSU
            patch -p1 -f < 10_enable_susfs_for_ksu.patch || true
            # 使用针对mksu的补丁
            patch -p1 -f < mksu_susfs.patch || true

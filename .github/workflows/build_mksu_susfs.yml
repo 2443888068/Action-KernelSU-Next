@@ -57,7 +57,7 @@ jobs:
          git config --global user.email "3436378798@qq.com"
       - name: Install dependencies
         run: |
-         cd ~
+         cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/
          sudo apt update && sudo apt upgrade -y
          sudo apt install -y python3 git curl
       - name: Install repo tool
@@ -67,7 +67,7 @@ jobs:
          sudo mv ~/repo /usr/local/bin/repo
       - name: Initialize repo and sync
         run: |
-         mkdir kernel_workspace && cd kernel_workspace
+         mkdir -p /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace && cd kernel_workspace
          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FEIL }}.xml --depth=1
          repo sync
          rm kernel_platform/common/android/abi_gki_protected_exports_* || echo "No protected exports!"
@@ -81,7 +81,7 @@ jobs:
       - name: Set up MKSU
         if: github.event.inputs.MKSU_ENABLED == 'true'
         run: |
-         cd ~/kernel_workspace/kernel_platform
+         cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform
          curl -LSs "https://raw.githubusercontent.com/5ec1cff/KernelSU/refs/heads/main/kernel/setup.sh" | bash -
          cd KernelSU
          KSU_VERSION=$(expr $(/usr/bin/git rev-list --count HEAD) "+" 10200)
@@ -91,17 +91,17 @@ jobs:
       - name: Set up susfs
         if: github.event.inputs.SUSFS_ENABLED == 'true'
         run: |
-           cd ~/kernel_workspace
+           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/
            git clone https://gitlab.com/simonpunk/susfs4ksu.git -b gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}
            git clone https://github.com/WildPlusKernel/kernel_patches.git
-           cd ~/kernel_workspace/kernel_platform
+           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform
            cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ~/kernel_workspace/kernel_platform/KernelSU
            cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
            cp ../susfs4ksu/kernel_patches/fs/* ./common/fs/
            cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
            cp ../kernel_patches/mksu_susfs.patch ~/kernel_workspace/kernel_platform/KernelSU
            # Apply patches
-           cd ~/kernel_workspace/kernel_platform/KernelSU
+           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU
            patch -p1 -f < 10_enable_susfs_for_ksu.patch || true
            # 使用针对mksu的补丁
            patch -p1 -f < mksu_susfs.patch || true
@@ -110,14 +110,14 @@ jobs:
            
       - name: Build kernel
         run: |
-         cd kernel_workspace
+         cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace
          ./kernel_platform/oplus/build/oplus_build_kernel.sh ${{ github.event.inputs.CPUD }} gki
          
       - name: Make AnyKernel3
         run: |
          git clone https://github.com/Kernel-SU/AnyKernel3 --depth=1
          rm -rf ./AnyKernel3/.git
-         cp kernel_workspace/kernel_platform/out/msm-kernel-${{ github.event.inputs.CPUD }}-gki/dist/Image ./AnyKernel3/
+         cp /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/out/msm-kernel-${{ github.event.inputs.CPUD }}-gki/dist/Image ./AnyKernel3/
       - name: Upload AnyKernel3
         uses: actions/upload-artifact@v4
         with:

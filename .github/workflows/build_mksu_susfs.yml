@@ -57,7 +57,7 @@ jobs:
          git config --global user.email "3436378798@qq.com"
       - name: Install dependencies
         run: |
-	 cd ~
+         cd ~
          sudo apt update && sudo apt upgrade -y
          sudo apt install -y python3 git curl
       - name: Install repo tool
@@ -67,7 +67,6 @@ jobs:
          sudo mv ~/repo /usr/local/bin/repo
       - name: Initialize repo and sync
         run: |
-	 cd ~
          mkdir kernel_workspace && cd kernel_workspace
          repo init -u https://github.com/OnePlusOSS/kernel_manifest.git -b refs/heads/oneplus/${{ github.event.inputs.CPU }} -m ${{ github.event.inputs.FEIL }}.xml --depth=1
          repo sync

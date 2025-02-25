@@ -99,7 +99,7 @@ jobs:
            echo "3"
            cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform
            echo "4"
-           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU/
+           cp ../susfs4ksu/kernel_patches/KernelSU/10_enable_susfs_for_ksu.patch ./KernelSU/
            echo "5"
            cp ../susfs4ksu/kernel_patches/50_add_susfs_in_gki-${{ github.event.inputs.ANDROID_VERSION }}-${{ github.event.inputs.KERNEL_VERSION }}.patch ./common/
            echo "6"
@@ -107,11 +107,12 @@ jobs:
            echo "7"
            cp ../susfs4ksu/kernel_patches/include/linux/* ./common/include/linux/
            echo "8"
-           cp ../kernel_patches/mksu_susfs.patch /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU/
+           cp ../kernel_patches/mksu_susfs.patch ./KernelSU/
            echo "9"
            # Apply patches
            echo "10"
-           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform/KernelSU/
+           cd /home/runner/work/Action-KernelSU-Next/Action-KernelSU-Next/kernel_workspace/kernel_platform
+           cd ./KernelSU/
            echo "11"
            patch -p1 -f < 10_enable_susfs_for_ksu.patch || true
            echo "12"
